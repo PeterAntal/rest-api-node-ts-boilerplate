@@ -1,8 +1,16 @@
-import * as bcrypt from 'bcrypt';
-import { Request, Response } from 'express';
-import * as jwt from 'jwt-then';
-import config from '../../config/config';
-import User from './user.model';
+import * as bcrypt from "bcrypt";
+import { Request, Response } from "express";
+import * as jwt from "jwt-then";
+import config from "../../config/config";
+import User from "./user.model";
+
+export interface UserInfo {
+  name: string;
+  lastName: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default class UserController {
   public findAll = async (req: Request, res: Response): Promise<any> => {
@@ -11,14 +19,23 @@ export default class UserController {
       if (!users) {
         return res.status(404).send({
           success: false,
-          message: 'Users not found',
+          message: "Users not found",
           data: null
         });
       }
+      const userData = (users as any[]).map(user => {
+        return {
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          name: user.name,
+          lastName: user.lastName,
+          email: user.email
+        } as UserInfo;
+      });
 
       res.status(200).send({
         success: true,
-        data: users
+        data: userData
       });
     } catch (err) {
       res.status(500).send({
@@ -35,7 +52,7 @@ export default class UserController {
       if (!user) {
         return res.status(404).send({
           success: false,
-          message: 'User not found',
+          message: "User not found",
           data: null
         });
       }
@@ -71,7 +88,7 @@ export default class UserController {
       if (!userUpdated) {
         return res.status(404).send({
           success: false,
-          message: 'User not found',
+          message: "User not found",
           data: null
         });
       }
@@ -95,7 +112,7 @@ export default class UserController {
       if (!user) {
         return res.status(404).send({
           success: false,
-          message: 'User not found',
+          message: "User not found",
           data: null
         });
       }
